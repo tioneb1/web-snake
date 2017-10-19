@@ -11,46 +11,33 @@ class Game {
         // Initialize a 1 sized snake at the center of the game board
         this.snake = [[Math.round(width/(2*this.tileWidth)), Math.round(height/(2*this.tileHeight))]];
         this.food = undefined;
-	this.gameover = false
         this.addFood();
     }
 
     // Callback function called when a keyboard key
     // is pushed down
     keyDown(e) {
-        //Get the pause popup div
-        var popup = document.getElementById("pausePopup");
-
         console.log(e);
         switch(e.key) {
             case "ArrowLeft":
 		if (this.nextMove != "right") {
 		   this.nextMove = "left";
-           popup.style.visibility = "hidden";
 		}
                 break;
             case "ArrowUp":
 		if (this.nextMove != "down") {
 		   this.nextMove = "up";
-           popup.style.visibility = "hidden";
 		}
                 break;
             case "ArrowRight":
 		if (this.nextMove != "left") {
 		   this.nextMove = "right";
-           popup.style.visibility = "hidden";
 		}
                 break;
             case "ArrowDown":
 		if (this.nextMove != "up") {
 		   this.nextMove = "down";
-           popup.style.visibility = "hidden";
 		}
-                break;
-            case " ":
-
-           this.nextMove = undefined;
-           popup.style.visibility = "visible";
                 break;
             default:
                 // Do nothing just ignore it
@@ -71,7 +58,6 @@ class Game {
         switch(this.nextMove) {
             case undefined:
                 return;
-                break;
             case "left":
                 newHead[0] -= 1;
                 break;
@@ -90,17 +76,13 @@ class Game {
         //TODO: Check next move is not a game over
         // 1) If snake is going out ouf the game
         if(newHead[0] < 0) {
-            this.gameover = true;
             newHead[0] = 0;
         } else if(newHead[0] >= Math.round(this.width/(this.tileWidth))) {
-	    this.gameover = true;
             newHead[0] = Math.round(this.width/(this.tileWidth))-1;
         }
         if(newHead[1] < 0) {
-	    this.gameover = true;
             newHead[1] = 0;
         } else if(newHead[1] >= Math.round(this.height/(this.tileHeight))) {
-	    this.gameover = true;
             newHead[1] = Math.round(this.height/(this.tileHeight))-1;
         }
         // 2) If snake bites itself
@@ -132,7 +114,7 @@ class Game {
         ctx.fillStyle = 'blue';
         for(var i = 0; i < this.snake.length; i++) {
             var xy = this.snake[i];
-            ctx.fillRect(xy[0]*this.tileWidth, xy[1]*this.tileHeight, this.tileWidth, this.tileHeight);
+            ctx.fillRect(xy[0]*this.tileWidth, xy[1]*this.tileHeight, this.tileWidth, this.tileHeight);	
         }
 
         // Draw the food
@@ -140,15 +122,6 @@ class Game {
 		food.src = "js/Phone.jpg";
 		//TO DO : Randomize placement
 		ctx.drawImage(food, this.food[0]*this.tileWidth, this.food[1]*this.tileHeight);
-	//GameOver 
-	      if (this.gameover) {
-              ctx.font = '48px serif';
-              ctx.fillStyle = 'black';
-              var displayGameOver = "GAME OVER";
-              var text = ctx.measureText(displayGameOver);
-              console.log(text.width);
-              ctx.fillText(displayGameOver, (this.width-text.width)/2, this.height / 2);
-          }
     }
 }
 
@@ -159,7 +132,9 @@ function start() {
     game = new Game(canvas.width, canvas.height);
     document.onkeydown = function(e) {game.keyDown(e);};
     var ctx = canvas.getContext("2d");
-    setInterval(loop, 75, game, ctx);
+    var interval = 75;
+    // TO DO : Modulate Interval to accelerate it over time (based on game level)
+    setInterval(loop, interval, game, ctx);
 }
 
 // The game update and rendering loop
